@@ -144,6 +144,21 @@ if(LLVM_CCACHE_BUILD)
   endif()
 endif()
 
+# Build llvm with BuildCache if the package is present
+set(LLVM_BUILDCACHE_BUILD OFF CACHE BOOL "Set to ON for a BuildCache enabled build")
+if(LLVM_BUILDCACHE_BUILD)
+  find_program(BUILDCACHE_PROGRAM buildcache)
+  if(BUILDCACHE_PROGRAM)
+      set(LLVM_BUILDCACHE_DIR "" CACHE STRING "Directory to keep BuildCached data")
+      if (LLVM_BUILDCACHE_DIR)
+        set(BUILDCACHE_PROGRAM "BUILDCACHE_DIR=${LLVM_BUILDCACHE_DIR} ${BUILDCACHE_PROGRAM}")
+      endif()
+      set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ${BUILDCACHE_PROGRAM})
+  else()
+    message(FATAL_ERROR "Unable to find the program BuildCache. Set LLVM_BUILDCACHE_BUILD to OFF")
+  endif()
+endif()
+
 option(LLVM_DEPENDENCY_DEBUGGING "Dependency debugging mode to verify correctly expressed library dependencies (Darwin only)" OFF)
 
 # Some features of the LLVM build may be disallowed when dependency debugging is
@@ -153,8 +168,8 @@ if(LLVM_DEPENDENCY_DEBUGGING)
   if(NOT CMAKE_HOST_APPLE)
     message(FATAL_ERROR "Dependency debugging is only currently supported on Darwin hosts.")
   endif()
-  if(LLVM_CCACHE_BUILD)
-    message(FATAL_ERROR "Cannot enable dependency debugging while using ccache.")
+  if(LLVM_CCACHE_BUILD OR LLVM_BUILDCACHE_BUILD)
+    message(FATAL_ERROR "Cannot enable dependency debugging while using ccache or BuildCache.")
   endif()
 endif()
 

@@ -602,6 +602,11 @@ LLVM-specific variables
   options, which are passed to the CCACHE_MAXSIZE and CCACHE_DIR environment
   variables, respectively.
 
+**LLVM_BUILDCACHE_BUILD**:BOOL
+  If enabled and the ``buildcache`` program is available, then LLVM will be
+  built using ``buildcache`` to speed up rebuilds of LLVM and its components.
+  Defaults to OFF.
+
 **LLVM_FORCE_USE_OLD_TOOLCHAIN**:BOOL
   If enabled, the compiler and standard library versions won't be checked. LLVM
   may not compile at all, or might fail at runtime due to known bugs in these
